@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    添加用户
+{% endblock %}
+
+
+{% block body %}
+    <body>
+    <div style="width: 50%; margin: 5% auto">
+        <form class="layui-form" action={% url 'system:create_user' %}>
+            {#        用户名，onkeyup不能出现中文#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>用&ensp;户&ensp;名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" required lay-verify="required|username|username_is"
+                           placeholder="用户名必须在5~16位之间"
+                           autocomplete="off" class="layui-input" style="width: 50%"
+                           onkeyup="value=value.replace(/[\u4E00-\u9FA5]/g,'')">
+                </div>
+            </div>
+            {#        真实姓名#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>真实姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="first_name" required lay-verify="required"
+                           placeholder="请输入您的真实姓名"
+                           autocomplete="off" class="layui-input" style="width: 50%">
+                </div>
+            </div>
+            {#        密码1#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>密&emsp;&emsp;码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password0" required lay-verify="required|password0"
+                           placeholder="密码必须在6~10位之间"
+                           autocomplete="off" class="layui-input" style="width: 50%">
+                </div>
+            </div>
+            {#        密码2#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>确认密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password1" required lay-verify="required|password1|password_is"
+                           placeholder="再次输入密码"
+                           autocomplete="off"
+                           class="layui-input" style="width: 50%">
+                </div>
+            </div>
+            {#        性别#}
+            <div class="layui-form-item">
+                <label class="layui-form-label">性&emsp;&emsp;别</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="sex" value="男" title="男" checked>
+                    <input type="radio" name="sex" value="女" title="女">
+                </div>
+            </div>
+            {#        职位#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>职&emsp;&emsp;位</label>
+                <div class="layui-input-inline">
+                    <select name="city" lay-verify="required">
+                        <option value=""></option>
+                        <option value="教师">教师</option>
+                        <option value="学生">学生</option>
+                    </select>
+                </div>
+            </div>
+            {#        状态#}
+            <div class="layui-form-item">
+                <label class="layui-form-label">状&emsp;&emsp;态</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="switch" lay-skin="switch">
+                </div>
+            </div>
+            {#        提交按钮#}
+            <div class="layui-form-item" style="margin-top: 5%">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit lay-filter="add_user">确认添加</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    </body>
+{% endblock %}
+
+
+{% block JS %}
+    <script>
+        $(function () {
+            layui.use('form', function () {
+                let form = layui.form;
+
+                // 监听提交
+                form.on('submit(add_user)', function (data) {
+                    // 表单数据
+                    // console.log(data);
+                    let url = $('form').attr('action');
+                    $.ajax({
+                        type: 'post',
+                        url: url,
+                        data: data.field,
+                        success: function (res) {
+                            if (res.err === 'false') {
+                                // 自动获取错误焦点
+                                $('input[name="username"]').addClass('layui-form-danger').focus();
+                                layer.msg('该用户名已存在！', function () {
+                                });
+                                return false
+                            }
+                            if (res.err === '200') {
+                                layer.msg('添加成功！');
+                                $('button[type="reset"]').click();
+                            } else {
+                                console.log('失败！');
+                            }
+                        }
+                    });
+                    // 阻止页面跳转
+                    return false;
+                });
+            });
+        })
+    </script>
+{% endblock %}

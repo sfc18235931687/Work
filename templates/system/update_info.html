@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    编辑资料
+{% endblock %}
+
+
+{% block body %}
+    <body>
+    <div style="width: 50%; margin: 5% auto" class="my_info_left">
+{#        my_info小标题#}
+        {% block h1 %}{% endblock %}
+        <form class="layui-form">
+            {#        用户id(隐藏)#}
+            <div class="layui-form-item" style="display: none">
+                <label class="layui-form-label"><span style="color: red">*</span>ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="user_id" placeholder="用户的ID"
+                           autocomplete="off" class="layui-input" value="{{ user.id }}" disabled>
+                </div>
+            </div>
+            {#        用户名#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>用&ensp;户&ensp;名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" required lay-verify="required|username|username_is"
+                           placeholder="用户名必须在5~16位之间"
+                           autocomplete="off" class="layui-input" value="{{ user.username }}"
+                           disabled style="border: none">
+                </div>
+            </div>
+            {#        姓名#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>真实姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="first_name" required lay-verify="required"
+                           placeholder="请输入您的真实姓名"
+                           autocomplete="off" class="layui-input" value="{{ user.first_name }}">
+                </div>
+            </div>
+            {#        性别#}
+            <div class="layui-form-item">
+                <label class="layui-form-label">性&emsp;&emsp;别</label>
+                <div class="layui-input-block">
+                    {% if user.sex == '男' %}
+                        <input type="radio" name="sex" value="男" title="男" checked>
+                        <input type="radio" name="sex" value="女" title="女">
+                    {% else %}
+                        <input type="radio" name="sex" value="男" title="男">
+                        <input type="radio" name="sex" value="女" title="女" checked>
+                    {% endif %}
+                </div>
+            </div>
+            {#            手机#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>手&emsp;&emsp;机</label>
+                {% block phone %}
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" required lay-verify="required|phone" placeholder="请输入正确11位手机号"
+                               autocomplete="off" class="layui-input" value="{{ user.phone }}">
+                    </div>
+                {% endblock %}
+            </div>
+
+            {#            邮箱#}
+            <div class="layui-form-item">
+                <label class="layui-form-label"><span style="color: red">*</span>邮&emsp;&emsp;箱</label>
+                {% block email %}
+                    <div class="layui-input-block">
+                        <input type="text" name="email" required lay-verify="email_is"
+                               placeholder="xxx@xx.xxx格式有效邮箱"
+                               autocomplete="off" class="layui-input" value="{{ user.email }}">
+                    </div>
+                {% endblock %}
+            </div>
+
+            {#        职位(个人信息修改就不需要了)#}
+            {% block pass %}
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red">*</span>职&emsp;&emsp;位</label>
+                    <div class="layui-input-inline">
+                        <select name="city" lay-verify="required">
+                            {% if user.is_rank == '教师' %}
+                                <option value="教师">教师</option>
+                                <option value="学生">学生</option>
+                            {% else %}
+                                <option value="学生">学生</option>
+                                <option value="教师">教师</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                {#        提交按钮#}
+                <div class="layui-form-item" style="margin-top: 15%">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" lay-submit lay-filter="update_info">确认修改</button>
+                    </div>
+                </div>
+            {% endblock %}
+        </form>
+    </div>
+{#    my_info右边半个#}
+    {% block div_right %}{% endblock %}
+    </body>
+{#    my_info绑定手机邮箱部分#}
+    {% block input_phone_email %}{% endblock %}
+{% endblock %}
+
+
+{% block JS %}
+    <script>
+        $(function () {
+            layui.use('form', function () {
+                let form = layui.form;
+
+                // 监听提交
+                form.on('submit(update_info)', function (data) {
+                    // 表单数据
+                    // console.log(data);
+                    $.ajax({
+                        type: 'post',
+                        url: '/update_info/',
+                        data: data.field,
+                        success: function (res) {
+                            if (res.update_info === 'phone_no') {
+                                // 自动获取错误焦点
+                                $('input[name="phone"]').addClass('layui-form-danger').focus();
+                                layer.msg('该手机号已存在！');
+                                return false
+                            }
+                            if (res.update_info === 'ok') {
+                                // 关闭当前页面
+                                let index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                parent.layer.close(index);
+                                parent.$('.page_this').click();
+                                parent.layer.msg('修改成功！');
+                            } else {
+                                console.log('失败！');
+                            }
+                        }
+                    });
+                    // 阻止页面跳转
+                    return false;
+                });
+            });
+        })
+    </script>
+{% endblock %}

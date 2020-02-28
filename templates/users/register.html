@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>哎吖任务发布系统-注册</title>
+    <link rel="icon" href={% static 'img/favicon.ico' %}>
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href={% static 'css/bootstrap.min.css' %}>
+    <link rel="stylesheet" id="theme-stylesheet" href={% static 'css/style.default.css' %}>
+    <script src={% static 'js/jquery.min.js' %}></script>
+    <script src={% static 'js/bootstrap.min.js' %}></script>
+    <script src={% static 'ajax/register.js' %}></script>
+    <style type="text/css">
+        body {
+            padding-right: 0 !important;
+        }
+
+        #register-username-error1, #register-username-error2 {
+            display: none;
+            width: 100%;
+            margin-top: .25rem;
+            font-size: 80%;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div class="page login-page">
+    <div class="container d-flex align-items-center">
+        <div class="form-holder has-shadow">
+            <div class="row">
+                <!-- Logo & Information Panel-->
+                <div class="col-lg-6">
+                    <div class="info d-flex align-items-center" style="background:rgba(52, 58, 64, 0.9);">
+                        <div class="content">
+                            <div class="logo">
+                                <h1>注册</h1>
+                                <div style="border-top: solid 1px white; margin: 10% 0"></div>
+                            </div>
+                            <h3>哎吖任务发布系统</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- Form Panel    -->
+                <div class="col-lg-6 bg-white">
+                    <div class="form d-flex align-items-center">
+                        <div class="content">
+                            <form method="post" action={% url 'users:register' %}>
+                                <div class="form-group">
+                                    <input id="register-username" class="input-material" type="text"
+                                           name="registerUsername"
+                                           placeholder="请输入用户名">
+                                    <div class="invalid-feedback">用户名必须在5~16位之间</div>
+                                    <div id="register-username-error1">用户名已存在!</div>
+                                    <div id="register-username-error2" style="color: #1c7430">该用户名可用!</div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="register-password" class="input-material" type="password"
+                                           name="registerPassword" placeholder="请输入密码">
+                                    <div class="invalid-feedback">
+                                        密码必须在6~18位之间
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="register-passwords" class="input-material" type="password"
+                                           name="registerPasswords" placeholder="确认密码">
+                                    <div class="invalid-feedback">
+                                        两次密码必须相同 且在6~18位之间
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" class="custom-control-input" id="radio_sex1"
+                                               name="optionsRadios" value="男" checked>
+                                        <label class="custom-control-label" for="radio_sex1">男</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" class="custom-control-input" id="radio_sex2"
+                                               name="optionsRadios" value="女">
+                                        <label class="custom-control-label" for="radio_sex2">女</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <input id="register-phone" class="input-material" type="text"
+                                           name="registerPhone" placeholder="请输入手机号">
+                                    <div class="invalid-feedback">
+                                        请正确输入数字为11位手机号码
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="register-code" class="input-material" type="text"
+                                           name="registerCode" placeholder="验证码" style="width: 50%; float: left">
+                                    <button class="btn btn-outline-secondary" id="btn_code" type="button"
+                                            style="width: 45%; margin-left: 5%" disabled>
+                                        获取验证码
+                                    </button>
+                                    <span style="margin-right: 15%;float: right;color: green;font-size: 80%"></span>
+                                    <div class="invalid-feedback" id="register-code-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="register-email" class="input-material" type="text"
+                                           name="registerEmail" placeholder="请输入有效邮箱">
+                                    <div class="invalid-feedback">
+                                        请正确输入xxx@xxx.xxx格式的有效邮箱
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button id="regbtn" type="submit" name="registerSubmit" class="btn btn-dark"
+                                            style="padding: 6px 35px">注册
+                                    </button>
+                                    <div style="margin-top: -20px;">
+                                        <div class="custom-control custom-radio custom-control-inline"
+                                             style="float: right;margin-top: 7.5%">
+                                            <input type="radio" class="custom-control-input" id="radio_student"
+                                                   name="example" value="学生" checked>
+                                            <label class="custom-control-label" for="radio_student">学生</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline"
+                                             style="float: right;margin-top: 7.5%"
+                                             id="teacher">
+                                            <input type="radio" class="custom-control-input" id="radio_teacher"
+                                                   name="example" value="教师">
+                                            <label class="custom-control-label" for="radio_teacher">教师</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small>已有账号?&nbsp;</small><a class="signup text-success" href={% url 'users:login' %}>去登录</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal-超管验证 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter"
+        style="display: none" id="verify"></button>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true" style="width: 100%;height: 100%; padding-right: 0">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content"  style="border-radius: 15px">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle" style="color: #dc3545">管理员验证</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" id="yz_no">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <small>教师身份必须通过此验证!</small>
+                <form method="post" name="super">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="exampleInputSuperuser"></label>
+                        <input type="email" class="form-control" id="exampleInputSuperuser" placeholder="超级管理员账号" style="border-radius: 10px">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="exampleInputPassword"></label>
+                        <input type="password" class="form-control" id="exampleInputPassword" placeholder="请输入密码" style="border-radius: 10px">
+                    </div>
+                    <small id="yz_hint" style="color: #dc3545;"></small>
+                </form>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none">
+                <button type="submit" class="btn btn-dark" style="padding: 6px 50px;border-radius: 20px" id="modal_yz">验&ensp;证</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal-提示框 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop"
+        style="display: none" id="hint"></button>
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content"  style="border-radius: 15px">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel" style="color: #1c7430">注册成功!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" id="No">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p>为了您的账号安全,需在您的邮箱激活账号后才可正常使用!</p>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none">
+                <button type="button" class="btn btn-outline-success" data-dismiss="modal" style="padding: 6px 50px;border-radius: 20px" id="Yes">好的</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{#标题#}
+{% block title %}
+    哎吖任务发布系统
+{% endblock %}
+
+{#css部分#}
+{% block CSS %}
+    <style>
+        .layui-layer-btn {
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
+
+{#body部分#}
+{% block body %}
+    <body class="layui-layout-body">
+    <div class="layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo" style="color: white">
+                <i class="layui-icon layui-icon-chart"></i>哎吖任务发布系统<i class="layui-icon layui-icon-chart"></i>
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <!--收缩侧边栏-->
+                <li class="layui-nav-item" id="ss" style="cursor: pointer">
+                    <i class="layui-icon layui-icon-shrink-right"></i>
+                </li>
+                <li class="layui-nav-item" id="ss_ss" style="display: none;cursor: pointer">
+                    <i class="layui-icon layui-icon-spread-left"></i>
+                </li>
+                <!--刷新页面-->
+                <li class="layui-nav-item" id="flush" style="margin: 0 30px; cursor: pointer">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                </li>
+                <li class="layui-nav-item layui-this" id="console">
+                    <a href={% url 'system:console' %}>控制台</a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    {% if user.is_rank is None %}
+                        <a href="javascript:">
+                            <img class="layui-nav-img" alt="头像" src={% static 'img/gif3.gif' %}>
+                            {{ user }}(超级管理员)
+                        </a>
+                    {% else %}
+                        <a href="javascript:">
+                            <img class="layui-nav-img" alt="头像" src={% static 'img/gif3.gif' %}>
+                            {{ user }}({{ user.is_rank }})
+                        </a>
+                    {% endif %}
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:" id="user_info">基本资料</a></dd>
+                        <dd><a href="javascript:" id="update_pwd">修改密码</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:">帮助</a>
+                    <dl class="layui-nav-child" id="help">
+                        <dd><a href="javascript:" id="system_info">系统介绍</a></dd>
+                        <dd><a href="javascript:" id="WeChat">联系作者</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href={% url 'users:logout' %}>
+                    注销&ensp;<i class="layui-icon layui-icon-logout"></i></a></li>
+            </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black" id="left">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree  layui-anim layui-anim-up" lay-filter="test" id="nav_left">
+                    <li class="layui-nav-item">
+                        <a href="javascript:">个人信息</a>
+                        <dl class="layui-nav-child">
+                            <dd><a id="my_info" href={% url 'system:my_info' %}>个人&任务</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:">学生信息</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href={% url 'system:StudentList' %}>学生列表</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:">任务中心</a>
+                        <dl class="layui-nav-child">
+                            {% if request.user.is_superuser == 1 or request.user.is_rank == '教师' %}
+                                <dd><a href={% url 'system:PublishJob' %}>发布作业</a></dd>
+                                <dd><a href="{% url 'system:CheckJobs' %}">检查作业</a></dd>
+                                <dd><a href="{% url 'system:SeeJobs' %}">查看作业</a></dd>
+                            {% else %}
+                                <dd><a href="{% url 'system:SeeJobs' %}">查看作业</a></dd>
+                            {% endif %}
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:">文件中心</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="{% url 'system:SeeFiles' %}">查看文件</a></dd>
+                            <dd><a href="{% url 'system:UploadFiles' %}">上传文件</a></dd>
+                            <dd><a href="{% url 'system:DownloadLog' %}">下载记录</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        {% if request.user.is_superuser == 1 or request.user.is_rank == '教师' %}
+                            <a href="javascript:">学生管理</a>
+                            <dl class="layui-nav-child">
+                                <dd><a href={% url 'system:DelStudentList' %}>删除的学生</a></dd>
+                            </dl>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <iframe class="layui-col-md12" height="100%" width="100%" src={% url 'system:console' %}></iframe>
+        </div>
+
+        <div class="layui-footer" style="text-align: center;background-color: #ffffff;">
+            <!-- 底部固定区域 -->
+            © AiYa - 任务发布系统
+        </div>
+    </div>
+    </body>
+    <div style="padding: 50px; line-height: 22px; background-color: #eee; font-weight: 600; display: none" id="info">
+        <h2>基本资料</h2>
+        <hr>
+        <br><br>用&ensp;户&ensp;名：{{ user }}
+        <br><br>姓&emsp;&emsp;名：{{ user.first_name }}
+        <br><br>身&emsp;&emsp;份：{{ user.is_rank }}
+        <br><br>性&emsp;&emsp;别：{{ user.sex }}
+        <br><br>邮&emsp;&emsp;箱：{{ user.email }}
+        <br><br>手&ensp;机&ensp;号：{{ user.phone }}
+        <br><br>最近登录：{{ user.last_login|date:'Y-m-d H:i:s' }}
+        <br><br>加入时间：{{ user.date_joined|date:'Y-m-d H:i:s' }}
+    </div>
+    <img alt="二维码" id="WeChat_code" width="400" height="500" style="display: none" src={% static 'img/WeChat.jpg' %}>
+    <form style="display: none" action={% url 'system:index' %}>
+        <div style="margin: 10% 10% 10% 0;" class="layui-form" lay-filter="up_pwd">
+            {#        密码1#}
+            <div class="layui-form-item">
+                <label class="layui-form-label">新&ensp;密&ensp;码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password0" required lay-verify="required|password0"
+                           placeholder="密码必须在6~10位之间"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            {#        密码2#}
+            <div class="layui-form-item">
+                <label class="layui-form-label">确认密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="password1" required lay-verify="required|password1|password_is"
+                           placeholder="再次输入密码"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            {#        提交#}
+            <div style="text-align: center;margin-top: 10%;">
+                <button type="submit" class="layui-btn layui-btn-primary layui-btn-radius" lay-submit>确认修改</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{#js部分#}
+{% block JS %}
+    <script src={% static 'ajax/index.js' %}></script>
+{% endblock %}

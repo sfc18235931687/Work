@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load set_set %}
+
+{% block title %}
+    下载记录
+{% endblock %}
+
+
+{% block body %}
+    <body>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card" style="height: 590px">
+                    <div class="layui-card-header">我的下载</div>
+                    <div class="layui-card-body">
+                        <h5>总数量：{{ my_download|length }}</h5>
+                        <br>
+                        {% for down in my_download %}
+                            <h3>{{ down.D_time|date:'Y-m-d'|set_set }}</h3>
+                            <p>
+                                <i style="font-size: 12px;">({{ down.D_time|date:"H:i:s" }})</i>
+                                下载了<span style="color: #1c7430">{{ down.D_log }}</span>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card" style="height: 590px">
+                    <div class="layui-card-header">世界下载</div>
+                    <div class="layui-card-body">
+                        <h5>总数量：{{ log|length }}</h5>
+                        <br>
+                        {% for l in log %}
+                            <p>
+                                <i style="font-size: 12px;">({{ l.D_time }})</i>
+                                <span style="color: #1c7430">{{ l.D_U.username }}</span>
+                                下载了
+                                <span style="color: #1c7430">{{ l.D_log }}</span>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}

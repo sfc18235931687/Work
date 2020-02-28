@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    控制台
+{% endblock %}
+
+
+{% block CSS %}
+    <style>
+        .layui-table th, tr {
+            text-align: center;
+        }
+
+        .layui-card-header {
+            margin-top: 5%;
+            background-color: #eee;
+        }
+
+        .layui-card-body {
+            overflow: auto;
+            height: 180px
+        }
+    </style>
+    {% load set_set %}
+{% endblock %}
+
+
+{% block body %}
+    <body>
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">系统动态</li>
+            {#    超管页面#}
+            {% if user.is_superuser == 1 %}
+                <li>管理中心</li>
+            {% endif %}
+            <li>世界</li>
+        </ul>
+        <div class="layui-tab-content">
+            {#        系统动态#}
+            <div class="layui-tab-item layui-show">
+                <div class="layui-row">
+                    {#                半左#}
+                    <div class="layui-col-md6" style="padding-right: 2%; padding-left: 2%">
+                        <div class="layui-col-md12">
+                            <div class="layui-card">
+                                <div class="layui-card-header">统计</div>
+                                <div class="layui-card-body">
+                                    <p>教师：<span style="color: #1c7430;font-size: 20px;">&emsp;{{ teachers }}&emsp;</span>名</p><br>
+                                    <p>学生：<span style="color: #1c7430;font-size: 20px;">&emsp;{{ students }}&emsp;</span>名</p><br>
+                                    <p>共计任务量：<span style="color: #1c7430;font-size: 20px;">&emsp;{{ job_count }}&emsp;</span>个</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md12">
+                            <div class="layui-card">
+                                <div class="layui-card-header">当前任务<span>（已提交{{ now_job.T_count }}人）</span></div>
+                                <div class="layui-card-body">
+                                    <h2>{{ now_job.T_title }}</h2>
+                                    <hr>
+                                    {{ now_job.T_text|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#                半右#}
+                    <div class="layui-col-md6" style="padding-left: 2%;padding-right: 2%;">
+                        <div class="layui-col-md12">
+                            <div class='layui-card'>
+                                <div class="layui-card-header">动态信息</div>
+                                <div class="layui-card-body" style="height: 450px">
+                                    <ul class="layui-timeline" style="padding-top: 1%">
+                                        {% for users in trends %}
+                                            <h3 class="layui-timeline-title">{{ users.date_joined|date:'Y-m-d'|set_set }}</h3>
+                                            <li class="layui-timeline-item">
+                                                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                                <div class="layui-timeline-content layui-text">
+                                                    <p>
+                                                        <i>{{ users.date_joined|date:"H:i:s" }}&emsp;</i>
+                                                        <span style="color: #1c7430">{{ users.username }}({{ users.is_rank }})</span>成为AiYa的一员！
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="layui-timeline-item">
+                                            <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i>
+                                            <div class="layui-timeline-content layui-text">
+                                                <div class="layui-timeline-title">更久前...Tao一直在忙着创造我...</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#        管理中心(超管页面)#}
+            {% if user.is_superuser == 1 %}
+                <div class="layui-tab-item">
+                    <form class="layui-form" lay-filter="search" id="search">
+                        <label class="layui-form-label" style="display: none">搜索框</label>
+                        <div class="layui-input-inline" style="float:left;">
+                            <input type="text" name="search" required lay-verify="empty_is" placeholder="请输入关键字搜索"
+                                   autocomplete="off" class="layui-input" style="border-radius: 15px;margin-left: 5%;">
+                        </div>
+                        <button type="submit" lay-submit class="layui-btn layui-btn-primary layui-btn-radius"
+                                style="margin-left: 1%">搜索
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius" id="retreat">返回
+                        </button>
+                        <button type="button" class="layui-btn layui-btn-primary" style="float: right" id="add_user">
+                            <i class="layui-icon"></i>添加用户
+                        </button>
+                    </form>
+                    {#            管理表#}
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>姓名</th>
+                            <th>职位</th>
+                            <th>性别</th>
+                            <th>电话</th>
+                            <th>邮箱</th>
+                            <th>最近登录</th>
+                            <th>更新时间</th>
+                            <th>加入时间</th>
+                            <th>启用/停用</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                    {#           页码栏#}
+                    <div style="position: absolute;bottom: 0;max-width: 1000px;width: 100%;left: 0;right: 0;margin: auto; display: block"
+                         id="page_div">
+                        <div style="text-align: center;margin: 5% 0;">
+                            <form id="page" action={% url 'system:console' %}>
+                                <a class="first_page">
+                                    <button type="button" class="layui-btn layui-btn-primary layui-btn-sm">上一页</button>
+                                </a>
+
+                                {% for num in users.paginator.page_range %}
+                                    <a class="now_page">
+                                        <button type="button"
+                                                class="layui-btn layui-btn-primary layui-btn-sm">{{ num }}</button>
+                                    </a>
+                                {% endfor %}
+
+                                <button id="num_pages" type="button" class="layui-btn layui-btn-primary layui-btn-sm">
+                                    共{{ users.paginator.num_pages }}页
+                                </button>
+
+                                <a class="last_page">
+                                    <button type="button" class="layui-btn layui-btn-primary layui-btn-sm">下一页</button>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {#        世界#}
+            <div class="layui-tab-item" style="text-align: center">
+                <h1>计划所有用户聚集聊天！</h1>
+                <h1>你好，世界！</h1>
+                <h1>我还需要更深入的学习！</h1>
+                <h1>加油！！</h1>
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}
+
+
+{% block JS %}
+    <script src={% static 'ajax/console.js' %}></script>
+{% endblock %}

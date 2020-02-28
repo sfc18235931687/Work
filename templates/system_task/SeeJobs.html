@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    查看任务
+{% endblock %}
+
+{% block CSS %}
+    <style>
+        .layer_file div {
+            padding: 2%;
+        }
+
+        .layer_file a {
+            color: #1c7430;
+        }
+
+        .layer_file a:hover {
+            color: red;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <body style="padding: 1%">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">查看</a>
+        <a class="layui-btn layui-btn-xs hand_in" lay-event="hand_in">提交</a>
+    </script>
+    <div id="link" style="display:none;"></div>
+    <input type="text" style="display:none;" value="" id="j_id">
+    <button type="button" class="layui-btn" id="test3" style="display: none;" value=""><i class="layui-icon"></i>上传文件
+    </button>
+    </body>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        layui.use(['table', 'upload'], function () {
+            let table = layui.table;
+            let upload = layui.upload;
+
+            table.render({
+                elem: '#test'
+                , url: '/SeeJobs/'
+                , limit: 5
+                , limits: [5, 10, 20]
+                , title: '任务表'
+                , cols: [[
+                    {field: 'id', title: 'ID', width: 80, fixed: 'left', unresize: true, sort: true}
+                    , {field: 'username', title: '用户名', width: 120, edit: 'text'}
+                    , {field: 'first_name', title: '姓名', width: 100}
+                    , {field: 'title', title: '任务', width: 100}
+                    , {field: 'file', title: '附件'}
+                    , {field: 'time', title: '发布时间', width: 200}
+                    , {field: 's_is', title: '状态', width: 100}
+                    , {field: 'count', title: '提交人数', width: 100}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150, align: 'center'}
+                ]]
+                , page: true
+            });
+
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+                let data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'edit') {
+                    $.each(data.link, function (index, value) {
+                        let link = '<a href="/download/' + value + '">' + data.file[index] + '</a><br>';
+                        $('#link').append(link);
+                    });
+                    //console.log(data.link);
+                    //console.log(data.text);
+                    let links = $('#link');
+                    layer.open({
+                        type: 1,
+                        title: data.title,
+                        skin: 'layer_file',
+                        content: '<div>' + data.text + '<br><br><br>' + '<hr><b>附件：</b><br><br>' + links.html() + '</div>',
+                        area: ['400px', '500px'],
+                        maxmin: true
+                    });
+                    // 每次关掉都清楚添加的内容
+                    links.html('')
+                } else if (obj.event === 'hand_in') {
+                    if (data.sss === '000') {
+                        $('#j_id').val(data.id);
+                        $('#test3').click();
+                    } else if (data.sss === 'vip') {
+                        layer.msg('你是发布任务的，就不用提交了嘛')
+                    } else {
+                        layer.msg('你已提交过该任务了')
+                    }
+
+                }
+            });
+            upload.render({
+                elem: '#test3'
+                , url: '/SeeJobs/'
+                , method: 'post'
+                , accept: 'file'
+                , data: {
+                    id: function () {
+                        return $('#j_id').val()
+                    }
+                }
+                , done: function (res) {
+                    if (res.code === 0) {
+                        console.log($('#j_id').val());
+                        window.location.reload();
+                        parent.layer.msg('上传成功');
+                        //console.log(res);
+                    } else {
+                        layer.msg('出现异常，稍后重试');
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

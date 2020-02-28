@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href={% static 'img/favicon.ico' %}>
+    <link rel="stylesheet" href={% static 'layui/css/layui.css' %}>
+    {% block CSS %}{% endblock %}
+</head>
+
+{#主要部分#}
+{#block中的内容是要替换的内容，之外的内容是继承使用的内容#}
+{% block body %}
+<body>
+</body>
+{% endblock %}
+
+{#JS部分#}
+<script src={% static 'layui/layui.js' %}></script>
+<script src={% static 'jQuery/jquery-3.4.1.min.js' %}></script>
+{#    验证js#}
+<script src={% static 'ajax/verify.js' %}></script>
+{% block JS %}{% endblock %}
+</html>

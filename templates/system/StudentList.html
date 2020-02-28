@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    学生列表
+{% endblock %}
+
+
+{% block body %}
+    <body>
+    {#    搜索#}
+    <div style="margin: 1%;">
+        <label class="layui-form-label" style="display: none">搜索框</label>
+        <div class="layui-input-inline">
+            <input type="text" placeholder="请输入关键字搜索"
+                   autocomplete="off" class="layui-input" style="border-radius: 15px;margin-left: 5%;" id="search">
+        </div>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius"
+                style="margin-left: 1%" id="do_search">搜索
+        </button>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius" id="retreat" style="display: none">
+            取消
+        </button>
+    </div>
+
+    {#    表格#}
+    {% block url %}
+        <form action={% url 'system:StudentList' %}></form>
+    {% endblock %}
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+    {% if user.is_rank == '教师' or user.is_superuser == 1 %}
+        {% block btn_del %}
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="getCheckData">批量删除<span></span>
+                    </button>
+                    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength" style="display: none">选了多少个？
+                    </button>
+                </div>
+            </script>
+
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+        {% endblock %}
+    {% else %}
+        <script type="text/html" id="barDemo">
+            <p>------</p>
+        </script>
+    {% endif %}
+    </body>
+{% endblock %}
+
+
+{% block JS %}
+    <script src={% static 'ajax/StudentList.js' %}></script>
+{% endblock %}

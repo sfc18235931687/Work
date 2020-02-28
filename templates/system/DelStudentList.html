@@ -1,0 +1,30 @@
+{% extends 'system/StudentList.html' %}
+
+{% block title %}
+    删除的学生
+{% endblock %}
+
+
+{% block url %}
+    <form action={% url 'system:DelStudentList' %}></form>
+{% endblock %}
+
+
+{% block btn_del %}
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del_over">
+                永久删除<span></span>
+            </button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength" style="display: none">
+                选了多少个？
+            </button>
+            <button class="layui-btn layui-btn-sm" lay-event="batch_recover">
+                批量恢复<span></span>
+            </button>
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="recover">恢复</a>
+    </script>
+{% endblock %}

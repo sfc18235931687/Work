@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    检查任务
+{% endblock %}
+
+{% block CSS %}
+    <style>
+        #thead th {
+            text-align: center
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <body style="padding: 1%">
+    <div class="layui-form">
+        <table class="layui-table" style="text-align: center">
+            <thead>
+            <tr id="thead">
+                <th>ID</th>
+                <th>用户名</th>
+                <th>姓名</th>
+                <th>任务</th>
+                <th>文件</th>
+                <th>上传时间</th>
+                <th>状态</th>
+                <th>评分</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for job in jobs %}
+                <tr>
+                    <td>{{ job.S_U.id }}</td>
+                    <td>{{ job.S_U.username }}</td>
+                    <td>{{ job.S_U.first_name }}</td>
+                    <td>{{ job.S_T.T_title }}</td>
+                    <td>{{ job.S_name }}</td>
+                    <td>{{ job.S_time }}</td>
+                    {% if job.S_is == 0 %}
+                        <td style="color: #9F9F9F">未审核</td>
+                    {% elif job.S_is == 1 %}
+                        <td style="color: green">通过</td>
+                    {% elif job.S_is == 2 %}
+                        <td style="color: red">未通过</td>
+                    {% endif %}
+                    {% if job.S_num is None %}
+                        <td>------</td>
+                    {% else %}
+                        {% if job.S_num >= 80 %}
+                            <td style="color: green">{{ job.S_num }}</td>
+                        {% elif job.S_num < 80 and job.S_num >= 60 %}
+                            <td style="color: orange">{{ job.S_num }}</td>
+                        {% elif job.S_num < 60 %}
+                            <td style="color: red">{{ job.S_num }}</td>
+                        {% endif %}
+                    {% endif %}
+                    <td>
+                        <a href="{% url 'system:download' job.S_files %}"
+                           class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm">下载</a>
+                        <a href="javascript:" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm check_job"
+                           data-value="{{ job.S_U.id }}">审核</a>
+                        <a href="javascript:" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm check_sum"
+                           data-value="{{ job.S_U.id }}">打分</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </body>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        $(function () {
+            let url = '/CheckJobs/';
+            $('.check_job').click(function () {
+                let id = $(this).data('value');
+                layer.msg('该任务是否通过？', {
+                    time: 0,
+                    btn: ['通过', '未通过', '取消'],
+                    yes: function (index) {
+                        $.ajax({
+                            url: url, type: 'post', data: {is_is: 1, id: id},
+                            success: function (result) {
+                                if (result.code === 200) {
+                                    window.location.reload();
+                                    parent.layer.msg('该任务通过！')
+                                }
+                            }
+                        });
+                        layer.close(index)
+                    },
+                    btn2: function () {
+                        $.ajax({
+                            url: url, type: 'post', data: {is_is: 2, id: id},
+                            success: function (result) {
+                                if (result.code === 200) {
+                                    window.location.reload();
+                                    parent.layer.msg('该任务未通过！')
+                                }
+                            }
+                        })
+                    }
+                });
+            });
+            $('.check_sum').click(function () {
+                let id = $(this).data('value');
+                layer.prompt({title: '输入分数，并确认', formType: 3}, function (pass, index) {
+                    $.ajax({
+                        url: url, type: 'post', data: {num: pass, id: id},
+                        success: function (result) {
+                            if (result.code === 200) {
+                                layer.close(index);
+                                //window.location.reload();
+                                parent.layer.msg('对该任务打了：' + pass + '分');
+                            } else {
+                                layer.msg('请正确输入0~100之间数字打分！');
+                            }
+                        }
+                    });
+                });
+            })
+        })
+    </script>
+{% endblock %}

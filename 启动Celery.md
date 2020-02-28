@@ -1,0 +1,1 @@
+celery -A celery_tasks.celery worker -l info -P eventlet

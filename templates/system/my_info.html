@@ -1,0 +1,170 @@
+{% extends 'system/update_info.html' %}
+{% load static %}
+
+
+{% block title %}
+    个人信息
+{% endblock %}
+
+{% block CSS %}
+    <style>
+        body .layui-layer-demo .layui-layer-content {
+            padding-top: 5%;
+        }
+    </style>
+{% endblock %}
+
+
+{% block h1 %}
+    <h1>个人信息</h1>
+    <hr style="margin-bottom: 5%;width: 55%;">
+{% endblock %}
+
+
+{#手机验证码#}
+{% block phone %}
+    {% if user.phone %}
+        <span style="line-height: 38px">{{ user.phone }}</span>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm my_info_phone"
+                style="float: right;margin-right: 50%;margin-top: 5px;">更改手机
+        </button>
+    {% else %}
+        <span style="line-height: 38px">——————————</span>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm my_info_phone"
+                style="float: right;margin-right: 50%;margin-top: 5px;">绑定手机
+        </button>
+    {% endif %}
+{% endblock %}
+
+{#邮箱验证码#}
+{% block email %}
+    {% if user.email %}
+        <span style="line-height: 38px">{{ user.email }}</span>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm my_info_email"
+                style="float: right;margin-right: 50%;margin-top: 5px;">更改邮箱
+        </button>
+    {% else %}
+        <span style="line-height: 38px">——————————</span>
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm my_info_email"
+                style="float: right;margin-right: 50%;margin-top: 5px;">绑定邮箱
+        </button>
+    {% endif %}
+{% endblock %}
+
+{#提交按钮#}
+{% block pass %}
+    {#    <div class="layui-form-item layui-form-text">#}
+    {#        <label class="layui-form-label">自我介绍</label>#}
+    {#        <div class="layui-input-inline">#}
+    {#            <textarea placeholder="请输入内容" class="layui-textarea"></textarea>#}
+    {#        </div>#}
+    {#    </div>#}
+    <div class="layui-form-item" style="margin-top: 10%">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit lay-filter="my_info_update">确认修改</button>
+        </div>
+    </div>
+{% endblock %}
+
+{#手机/邮箱输入#}
+{% block input_phone_email %}
+    {#    手机#}
+    <form class="layui-form" style="display: none" id="input_phone" action={% url 'system:my_info' %}>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="phone" lay-verify="required|phone_is" autocomplete="off"
+                           class="layui-input" style="width: 160%" placeholder="输入手机号">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="phone_code" autocomplete="off" class="layui-input" placeholder="输入验证码">
+                </div>
+                <button type="button" lay-submit="" lay-filter="phone_code" class="layui-btn layui-btn-primary"
+                        id="btn_phone_code">
+                    发送验证码
+                </button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="submit_phone_code"
+                        style="margin: 5% 5% 0 20%;">
+                    立即提交
+                </button>
+            </div>
+        </div>
+    </form>
+    {#    邮箱#}
+    <form class="layui-form" style="display: none" id="input_email" action={% url 'system:my_info' %}>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">邮箱</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="email" lay-verify="email_is" autocomplete="off" class="layui-input"
+                           style="width: 160%" placeholder="输入xxx@xx.xxx格式有效邮箱">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+                    <input type="tel" name="email_code" autocomplete="off" class="layui-input" placeholder="输入验证码">
+                </div>
+                <button type="button" lay-submit="" lay-filter="email_code" class="layui-btn layui-btn-primary"
+                        id="btn_email_code">
+                    发送验证码
+                </button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn layui-btn-primary" lay-submit="" lay-filter="submit_email_code"
+                        style="margin: 5% 5% 0 20%;">
+                    立即提交
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+
+{% block div_right %}
+    <div style="float: right; width: 45%;margin-top: 5%;">
+        <h1>任务信息</h1>
+        <hr style="margin-bottom: 5%;width: 55%;">
+        {% if teacher %}
+            {% for t in teacher %}
+                <p>
+                    <span style="font-size: 12px">({{ t.T_time|date:'Y-m-d' }}发布了)</span>
+                    <span style="color: #1c7430">{{ t.T_title }}</span>
+                </p>
+            {% endfor %}
+        {% elif student %}
+            {% for s in student %}
+                <p>
+                    <span style="font-size: 12px">({{ s.S_time|date:'Y-m-d' }}提交了)</span>
+                    <span style="color: #1c7430">{{ s.S_name }}</span>
+                    <i>({{ s.S_T.T_title }})</i>
+                </p>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block JS %}
+    <script src={% static 'ajax/verify.js' %}></script>
+    <script src={% static 'ajax/info.js' %}></script>
+    <script>
+        $(function () {
+            $('body .my_info_left').css({width: ' 50%', margin: '5% 0 5% 5%', float: 'left'});
+        })
+    </script>
+{% endblock %}

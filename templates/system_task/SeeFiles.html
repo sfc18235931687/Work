@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load set_set %}
+
+{% block title %}
+    查看文件
+{% endblock %}
+
+{% block CSS %}
+    <style>
+        a {
+            color: darkgreen;
+        }
+
+        a:hover {
+            color: red;
+        }
+
+        .layui-card-body {
+            overflow: auto;
+            height: 540px
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <body>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md4">
+                <div class="layui-card" style="height: 590px">
+                    <div class="layui-card-header">我的上传</div>
+                    <div class="layui-card-body">
+                        <h5>总数量：{{ my_files|length }}</h5>
+                        <br>
+                        {% for my_file in my_files %}
+                            <h3>{{ my_file.F_time|date:'Y-m-d'|set_set }}</h3>
+                            <p>
+                                <i style="font-size: 12px;">({{ my_file.F_time|date:"H:i:s" }})</i>
+                                <a href="{% url 'system:download' my_file.F_files %}">{{ my_file.F_name }}</a>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card" style="height: 590px">
+                    <div class="layui-card-header">作业文件</div>
+                    <div class="layui-card-body">
+                        <h5>总数量：{{ job_files|length }}</h5>
+                        <br>
+                        {% for job_file in job_files %}
+                            <h3 class="title_file">{{ job_file.J_T.T_title|set_set }}</h3>
+                            <p>
+                                <i style="font-size: 12px;">({{ job_file.J_T.T_time }})</i>
+                                <a href="{% url 'system:download' job_file.J_files %}">{{ job_file.J_name }}</a>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-card" style="height: 590px">
+                    <div class="layui-card-header">共享文件</div>
+                    <div class="layui-card-body">
+                        <h5>总数量：{{ share_files|length }}</h5>
+                        <br>
+                        {% for share_file in share_files %}
+                            <h3>{{ share_file.F_U.username|set_set }}</h3>
+                            <p>
+                                <i style="font-size: 12px;">({{ share_file.F_time }})</i>
+                                <a href="{% url 'system:download' share_file.F_files %}">{{ share_file.F_name }}</a>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}
+
+
+{% block JS %}
+    <script>
+        $(function () {
+            $('a').click(function (event) {
+                event.preventDefault();
+                let that = this;
+                layer.msg('下载' + $(that).text() + '这个文件吗？', {
+                    time: 0,
+                    btn: ['下载', '算了'],
+                    success: function (layero) {
+                        layero.find('.layui-layer-btn').css('text-align', 'center');
+                    },
+                    yes: function () {
+                        layer.closeAll();
+                        window.open($(that).attr('href'))
+                    }
+                });
+            });
+        })
+    </script>
+{% endblock %}
+
